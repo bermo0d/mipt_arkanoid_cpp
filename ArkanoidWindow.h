@@ -3,9 +3,10 @@
 
 #include "Graph_lib/Window.h"
 #include "Graph_lib/Graph.h"
-#include "Platform.h"
+#include "frontend/PlatformShape.h"
 
 using namespace Graph_lib;
+
 
 class ArkanoidWindow : public Graph_lib::Window {
 public:
@@ -13,7 +14,7 @@ public:
 
     virtual ~ArkanoidWindow() = default;
 
-    Platform* rect = nullptr;
+    PlatformShape* platform = nullptr;
 private:
     int handle(int event) override;
 };
