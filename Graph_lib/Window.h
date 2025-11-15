@@ -44,12 +44,11 @@ public:
 
 protected:
   void draw ();
+  void init ();
 
 private:
   std::vector<Shape*> shapes;  // shapes attached to window
   int w, h;                    // window size
-
-  void init ();
 };
 
 int gui_main ();  // invoke GUI library's main event loop
