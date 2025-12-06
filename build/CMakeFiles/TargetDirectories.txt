@@ -1,3 +1,0 @@
-/mnt/d/VSprojects/mipt_arkanoid_cpp/build/CMakeFiles/arkanoid.dir
-/mnt/d/VSprojects/mipt_arkanoid_cpp/build/CMakeFiles/edit_cache.dir
-/mnt/d/VSprojects/mipt_arkanoid_cpp/build/CMakeFiles/rebuild_cache.dir
