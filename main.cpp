@@ -3,7 +3,7 @@
 #include "ArkanoidWindow.h"
 #include "backend/Platform.h"
 #include "frontend/PlatformShape.h"
-#include "frontend/StartWindow.h" 
+#include "frontend/StartWindow.h"
 #include <iostream>
 
 using namespace Graph_lib;
@@ -15,17 +15,18 @@ int main() {
     win.show();
     Fl::run();
 
-    if (clicked==true){
-    ArkanoidWindow window{Point{500, 200}, 800, 800, "arkanoid"};
-    Platform platform{350, 500, 100, 20};
-    PlatformShape platformShape{platform};
+    if (clicked) {
+        ArkanoidWindow window{Point{500, 200}, 800, 800, "arkanoid"};
+        Platform platform{350, 500, 100, 20};
+        PlatformShape platformShape{platform};
 
-    window.platform = &platformShape;
-    window.attach(platformShape);
+        window.platform = &platformShape;
+        window.attach(platformShape);
 
-    return Fl::run();}
+        return Fl::run();
+    }
 
-return -1;
+    return -1;
 
 }
 
