@@ -4,8 +4,11 @@
 #include "Graph_lib/Window.h"
 #include "Graph_lib/Graph.h"
 #include "Platform.h"
+#include "StartScreen.h"
+#include "GameScreen.h"
 
 using namespace Graph_lib;
+
 
 class ArkanoidWindow : public Graph_lib::Window {
 public:
@@ -13,9 +16,12 @@ public:
 
     virtual ~ArkanoidWindow() = default;
 
-    Platform* rect = nullptr;
+    void openGameScreen();
+
 private:
-    int handle(int event) override;
+    StartScreen* startScreen;
+    GameScreen* gameScreen;
+
 };
 
 #endif //ARKANOID_ARKANOIDWINDOW_H

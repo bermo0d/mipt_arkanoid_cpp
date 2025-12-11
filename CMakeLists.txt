@@ -17,6 +17,10 @@ add_executable(
         Graph_lib/Window.cpp
         ArkanoidWindow.cpp
         Platform.cpp
+        StartScreen.cpp
+        StartScreen.h
+        GameScreen.cpp
+        GameScreen.h
 )
 
 target_include_directories(${TARGET} PRIVATE
