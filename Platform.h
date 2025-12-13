@@ -9,7 +9,7 @@ class Platform : public Rectangle {
 public:
     Platform(Point xy, int ww, int hh);
 
-    void move(int dx, int dy) override;
+    void setPos(int x, int y);
 };
 
 

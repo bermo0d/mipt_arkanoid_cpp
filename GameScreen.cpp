@@ -2,7 +2,7 @@
 #include "Fl/Fl.H"
 #include "Fl/Fl_Group.H"
 
-
+#include <iostream>
 GameScreen::GameScreen(int x, int y, int w, int h) :
         Fl_Group(x, y, w, h),
         platform{Point{350, 785}, 100, 10},
@@ -12,17 +12,7 @@ GameScreen::GameScreen(int x, int y, int w, int h) :
 }
 
 int GameScreen::handle(int event) {
-    if (event == FL_SHORTCUT && visible()) {
-        switch (Fl::event_key()) {
-            case FL_Left:
-                platform.move(-30, 0);
-                break;
-            case FL_Right:
-                platform.move(30, 0);
-                break;
-        }
-        return 1;
-    }
+    platform.setPos(std::min(std::max(Fl::event_x(), 0), w() - platform.width()), platform.point(0).y);
     return 0;
 }
 
