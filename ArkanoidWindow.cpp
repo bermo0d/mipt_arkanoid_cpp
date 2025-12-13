@@ -23,6 +23,6 @@ void ArkanoidWindow::openGameScreen() {
 
     Fl::add_timeout(0.016, [](void* userdata) -> void {
         GameScreen* screen = static_cast<GameScreen*>(userdata);
-        screen->TimerCallback(userdata);
+        screen->updateFrame(userdata);
     }, gameScreen);
 }

@@ -1,6 +1,6 @@
 #include "Ball.h"
 
-Ball::Ball(Point xy, int rr) : Circle(xy, rr) {
+Ball::Ball(Point xy, int rr) : Circle(xy, rr), prevPos(xy) {
 
 }
 
@@ -20,6 +20,7 @@ void Ball::set_dy(int v) {
     dy = v;
 }
 
-
-
-
+void Ball::move(int dx, int dy) {
+    prevPos = point(0);
+    Shape::move(dx, dy);
+}

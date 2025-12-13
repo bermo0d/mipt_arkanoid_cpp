@@ -16,9 +16,14 @@ public:
     void set_dx(int v);
     void set_dy(int v);
 
+    void move (int dx, int dy) override;
+
+    Point getPrevPos() const {return prevPos;}
+
 private:
-    int dx = 5;
-    int dy = 5;
+    Point prevPos;
+    int dx = 4;
+    int dy = 4;
 };
 
 

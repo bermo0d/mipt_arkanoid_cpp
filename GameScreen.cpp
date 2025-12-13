@@ -5,7 +5,7 @@
 
 GameScreen::GameScreen(int x, int y, int w, int h) :
         Fl_Group(x, y, w, h),
-        platform{Point{350, 750}, 100, 20},
+        platform{Point{350, 785}, 100, 10},
         ball{Point{50, 100}, 10}{
     attach(platform);
     attach(ball);
@@ -34,27 +34,60 @@ void GameScreen::draw() {
         shapes[i]->draw();
 }
 
-void GameScreen::TimerCallback(void* userdata) {
+void GameScreen::updateFrame(void* userdata) {
     int dx = ball.get_dx();
     int dy = ball.get_dy();
     ball.move(dx, dy);
 
-    Point p = ball.point(0);
-    int x = p.x;
-    int y = p.y;
-    int r = ball.radius();
-
-    if (x + 2 * r > 800 || x < 0) {
+    if (collideBallWithWalls()) {
         ball.set_dx(-dx);
     }
-    if (y + 2 * r > 800 || y < 0) {
+    if (collideBallWithRoof()) {
         ball.set_dy(-dy);
+    }
+
+    if (collideBallWithPlatform()) {
+        ball.set_dy(-dy);
+    }
+    if (collideBallWithFloor()) {
+        ball.set_dy(0); // TODO: game over screen
+        ball.set_dx(0);
     }
 
     redraw();
 
     Fl::repeat_timeout(0.016, [](void* userdata) -> void {
         GameScreen* screen = static_cast<GameScreen*>(userdata);
-        screen->TimerCallback(userdata);
+        screen->updateFrame(userdata);
     }, this);
+}
+
+
+bool GameScreen::collideBallWithPlatform() const {
+    Point p1 = ball.point(0);
+    int x1 = p1.x;
+    int y1 = p1.y;
+    int prev_y1 = ball.getPrevPos().y;
+    int r = ball.radius();
+
+    Point p2 = platform.point(0);
+    int x2 = p2.x;
+    int y2 = p2.y;
+    int w = platform.width();
+    int h = platform.height();
+
+    return ((y1 + 2 * r >= y2  && y1 + 2 * r <= y2 + h) && (prev_y1 + 2 * r < y2) && (x2 <= x1 + r && x1 + r <= x2 + w));
+}
+
+bool GameScreen::collideBallWithWalls() const {
+    int x = ball.point(0).x;
+    return (x + 2 * ball.radius() > 800 || x < 0);
+}
+
+bool GameScreen::collideBallWithRoof() const {
+    return ball.point(0).y <= 0;
+}
+
+bool GameScreen::collideBallWithFloor() const {
+    return ball.point(0).y + 2 * ball.radius() >= 800;
 }

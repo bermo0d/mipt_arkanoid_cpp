@@ -9,6 +9,4 @@ int main() {
     ArkanoidWindow window{Point{500, 200}, 800, 800, "arkanoid"};
 
     return Fl::run();
-
 }
-

@@ -11,7 +11,7 @@ public:
 
     void attach(Shape& s) { shapes.push_back(&s); }
 
-    void TimerCallback(void* userdata);
+    void updateFrame(void* userdata);
 
 protected:
     void draw() override;
@@ -24,6 +24,11 @@ private:
     Ball ball;
 
     int handle(int event) override;
+
+    bool collideBallWithPlatform() const;
+    bool collideBallWithWalls() const;
+    bool collideBallWithRoof() const;
+    bool collideBallWithFloor() const;
 
 };
 
