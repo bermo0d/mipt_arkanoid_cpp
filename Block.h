@@ -7,9 +7,14 @@ using namespace Graph_lib;
 
 class Block : public Rectangle  {
 public:
-    Block(Point xy, int width, int height);
+    Block(Point xy, int width, int height, int hp);
 
-    int get_health();
+    int get_health() const;
     void set_health(int new_health);
     void deal_damage();
-}
+
+private:
+    int health;
+};
+
+#endif // ARKANOID_BLOCK_H
