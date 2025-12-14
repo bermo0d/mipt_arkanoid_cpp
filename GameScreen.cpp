@@ -1,10 +1,11 @@
 #include "GameScreen.h"
+#include "Settings.h"
 #include <cmath>
 
 GameScreen::GameScreen(int x, int y, int w, int h) :
         Fl_Group(x, y, w, h),
-        platform{Point{350, 785}, 100, 10},
-        ball{Point{50, 100}, 10},
+        platform{Point{platformStartX, platformY}, platformWidth, platformHeight},
+        ball{Point{50, 100}, ballRadius},
         blocks{20, 20} {
     attach(platform);
     attach(ball);
@@ -18,15 +19,14 @@ GameScreen::GameScreen(int x, int y, int w, int h) :
 }
 
 int GameScreen::handle(int event) {
-    int platform_w = platform.width();
-    platform.setPos(std::min(std::max(Fl::event_x() - platform_w / 2, 0), w() - platform_w), platform.point(0).y);
+    platform.setPos(std::min(std::max(Fl::event_x() - platformWidth / 2, 0), windowWidth - platformWidth), platformY);
     return 0;
 }
 
 void GameScreen::draw() {
     Fl_Group::draw();
     fl_color(FL_GRAY);
-    fl_rectf(x(), y(), w(), h());
+    fl_rectf(x(), y(), windowWidth, windowHeight);
     for (unsigned int i = 0; i < shapes.size(); ++i)
         shapes[i]->draw();
 }
@@ -46,7 +46,7 @@ void GameScreen::updateFrame(void *userdata) {
     if (collideBallWithPlatform()) {
         Point collidePoint = ball.center();
         int x = collidePoint.x;
-        double w = platform.width() / 2;
+        double w = platformWidth / 2;
 
         int new_dx = std::round((x - platform.point(0).x - w) / w * abs(dy));
 
@@ -73,20 +73,23 @@ bool GameScreen::collideBallWithPlatform() const {
     int x1 = p1.x;
     int y1 = p1.y;
     int prev_y1 = ball.getPrevPos().y;
-    int r = ball.radius();
+    int r = ballRadius;
 
     Point p2 = platform.point(0);
     int x2 = p2.x;
-    int y2 = p2.y;
-    int w = platform.width();
-    int h = platform.height();
+    int y2 = platformY;
+    int w = platformWidth;
+    int h = platformHeight;
 
-    return ((y1 + 2 * r >= y2 && y1 + 2 * r <= y2 + h) && (prev_y1 + 2 * r < y2) && (x2 <= x1 + r && x1 + r <= x2 + w));
+    return
+            (y1 + 2 * ballRadius >= platformY && y1 + 2 * ballRadius <= platformY + platformHeight) &&
+            (prev_y1 + 2 * ballRadius < platformY) &&
+            (x2 <= x1 + ballRadius && x1 + ballRadius <= x2 + platformWidth);
 }
 
 bool GameScreen::collideBallWithWalls() const {
     int x = ball.point(0).x;
-    return (x + 2 * ball.radius() > 800 || x < 0);
+    return (x + 2 * ball.radius() > windowWidth || x < 0);
 }
 
 bool GameScreen::collideBallWithRoof() const {
@@ -94,5 +97,5 @@ bool GameScreen::collideBallWithRoof() const {
 }
 
 bool GameScreen::collideBallWithFloor() const {
-    return ball.point(0).y + 2 * ball.radius() >= 800;
+    return ball.point(0).y + 2 * ball.radius() >= windowHeight;
 }

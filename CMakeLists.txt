@@ -22,6 +22,7 @@ add_executable(
         Ball.cpp
         Block.cpp
         BlocksMatrix.cpp
+        Settings.h
 )
 
 target_include_directories(${TARGET} PRIVATE
