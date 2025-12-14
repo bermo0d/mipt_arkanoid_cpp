@@ -4,9 +4,17 @@
 GameScreen::GameScreen(int x, int y, int w, int h) :
         Fl_Group(x, y, w, h),
         platform{Point{350, 785}, 100, 10},
-        ball{Point{50, 100}, 10}{
+        ball{Point{50, 100}, 10},
+        blocks{20, 20} {
     attach(platform);
     attach(ball);
+
+    for (int i = 0; i < 20; i++) {
+        for (int j = 0; j < 20; j++) {
+            Block* b = blocks.get_block(i, j);
+            attach((Shape&) *b);
+        }
+    }
 }
 
 int GameScreen::handle(int event) {

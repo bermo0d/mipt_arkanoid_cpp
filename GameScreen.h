@@ -4,6 +4,7 @@
 #include "FL/Fl_Group.H"
 #include "Platform.h"
 #include "Ball.h"
+#include "BlocksMatrix.h"
 
 class GameScreen : public Fl_Group {
 public:
@@ -22,6 +23,7 @@ private:
 
     Platform platform;
     Ball ball;
+    BlocksMatrix blocks;
 
     int handle(int event) override;
 
