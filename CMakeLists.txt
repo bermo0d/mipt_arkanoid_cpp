@@ -21,7 +21,7 @@ add_executable(
         GameScreen.cpp
         Ball.cpp
         Block.cpp
-        Matrix.cpp
+        BlocksMatrix.cpp
 )
 
 target_include_directories(${TARGET} PRIVATE

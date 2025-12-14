@@ -1,13 +1,13 @@
-#ifndef ARKANOID_MATRIX_H
-#define ARKANOID_MATRIX_H
+#ifndef ARKANOID_BLOCKSMATRIX_H
+#define ARKANOID_BLOCKSMATRIX_H
 
 #include <vector>
 
 class Block;
 
-class Matrix {
+class BlocksMatrix {
 public:
-    Matrix(int height, int width);
+    BlocksMatrix(int height, int width);
     Block* get_block(int x, int y) const;
     int get_height() const;
     int get_width() const;
@@ -21,4 +21,4 @@ private:
     void generate();
 };
 
-#endif //ARKANOID_MATRIX_H
+#endif //ARKANOID_BLOCKSMATRIX_H

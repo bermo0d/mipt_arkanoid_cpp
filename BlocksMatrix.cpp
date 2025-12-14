@@ -1,11 +1,11 @@
 #include "Block.h"
-#include "Matrix.h"
+#include "BlocksMatrix.h"
 #include "Graph_lib/Graph.h"
 
 #define field_width 800
 #define field_height 400
 
-Matrix::Matrix (int height, int width) : width(width), height(height) {
+BlocksMatrix::BlocksMatrix (int height, int width) : width(width), height(height) {
 
     field.resize(width);
 
@@ -16,7 +16,7 @@ Matrix::Matrix (int height, int width) : width(width), height(height) {
     generate();
 }
 
-void Matrix::generate () {
+void BlocksMatrix::generate () {
     for (int i = 0; i < width; i++) {
         for (int j = 0; j < height; j++) {
             field[i][j] = new Block(Graph_lib::Point(j*(field_width/width), i*(field_height/height)), field_width/width, 
@@ -25,15 +25,15 @@ void Matrix::generate () {
     }
 }
 
-int Matrix::get_height() const {
+int BlocksMatrix::get_height() const {
     return height;
 }
 
-int Matrix::get_width() const {
+int BlocksMatrix::get_width() const {
     return width;
 }
 
-Block* Matrix::get_block(int x, int y) const {
+Block* BlocksMatrix::get_block(int x, int y) const {
     if (x >= 0 && x < width && y >= 0 && y < height) {
         return field[x][y];
     }
