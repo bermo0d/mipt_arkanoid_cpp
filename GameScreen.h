@@ -33,6 +33,7 @@ private:
     bool collideBallWithRoof() const;
     bool collideBallWithFloor() const;
 
+    std::pair<int, int> checkTopCollideBallWithBlocks();
 };
 
 
