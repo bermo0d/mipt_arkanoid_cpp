@@ -42,8 +42,8 @@ void Ball::draw_lines() const {
     }
     
     const char* texturePath = happySmile ? 
-        "/root/mipt_arkanoid_cpp/sources/sprites/dovolny_smile.png" :
-        "/root/mipt_arkanoid_cpp/sources/sprites/smile.png";
+    "sources/textures/dovolny_smile.png" :
+    "sources/textures/smile.png";
     
     Fl_PNG_Image texture(texturePath);
     

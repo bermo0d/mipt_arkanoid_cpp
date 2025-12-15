@@ -26,7 +26,7 @@ int GameScreen::handle(int event) {
 }
 
 void GameScreen::draw() {
-    Fl_PNG_Image background("/root/mipt_arkanoid_cpp/sources/sprites/background.png");
+    Fl_PNG_Image background("sources/textures/background.png");
     if (background.w() > 0) {
         background.draw(x(), y(), w(), h());
     } else {

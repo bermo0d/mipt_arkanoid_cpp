@@ -33,8 +33,8 @@ void Platform::draw_lines() const {
     
 
     const char* texturePath = awake ? 
-        "/root/mipt_arkanoid_cpp/sources/sprites/awaked_platform.png" :
-        "/root/mipt_arkanoid_cpp/sources/sprites/sleepy_platform.png";
+        "sources/textures/awaked_platform.png" :
+        "sources/textures/sleepy_platform.png";
     
     Fl_PNG_Image texture(texturePath);
     
