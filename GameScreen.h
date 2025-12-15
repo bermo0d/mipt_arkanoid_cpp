@@ -11,6 +11,7 @@ public:
     GameScreen(int x, int y, int w, int h);
 
     void attach(Shape& s) { shapes.push_back(&s); }
+    void detach(Shape& s);
 
     void updateFrame(void* userdata);
 
@@ -32,6 +33,10 @@ private:
     bool collideBallWithRoof() const;
     bool collideBallWithFloor() const;
 
+    std::pair<int, int> checkTopCollideBallWithBlocks();
+    std::pair<int, int> checkBottomCollideBallWithBlocks();
+    std::pair<int, int> checkLeftCollideBallWithBlocks();
+    std::pair<int, int> checkRightCollideBallWithBlocks();
 };
 
 

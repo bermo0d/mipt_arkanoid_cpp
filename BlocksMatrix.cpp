@@ -5,37 +5,51 @@
 #define field_width 800
 #define field_height 400
 
-BlocksMatrix::BlocksMatrix (int height, int width) : width(width), height(height) {
+BlocksMatrix::BlocksMatrix(int matrixHeight, int matrixWidth) :
+        matrixWidth(matrixWidth), matrixHeight(matrixHeight),
+        blockWidth(field_width / matrixWidth), blockHeight(field_height / matrixHeight)
+        {
 
-    field.resize(width);
+    field.resize(matrixWidth);
 
-    for (int i = 0; i < width; i++) {
-        field[i].resize(height);
+    for (int i = 0; i < matrixWidth; i++) {
+        field[i].resize(matrixHeight);
     }
 
     generate();
 }
 
-void BlocksMatrix::generate () {
-    for (int i = 0; i < width; i++) {
-        for (int j = 0; j < height; j++) {
-            field[i][j] = new Block(Graph_lib::Point(j*(field_width/width), i*(field_height/height)), field_width/width, 
-        field_height/height, 5);  // 5 = hp
+void BlocksMatrix::generate() {
+    for (int i = 0; i < matrixWidth; i++) {
+        for (int j = 0; j < matrixHeight; j++) {
+            field[i][j] = new Block(Graph_lib::Point(j*blockWidth, i*blockHeight), blockWidth, blockHeight, 5);  // 5 = hp
         }
     }
 }
 
-int BlocksMatrix::get_height() const {
-    return height;
+int BlocksMatrix::getMatrixHeight() const {
+    return matrixHeight;
 }
 
-int BlocksMatrix::get_width() const {
-    return width;
+int BlocksMatrix::getMatrixWidth() const {
+    return matrixWidth;
+}
+
+int BlocksMatrix::getBlockHeight() const {
+    return blockHeight;
+}
+
+int BlocksMatrix::getBlockWidth() const {
+    return blockWidth;
 }
 
 Block* BlocksMatrix::get_block(int x, int y) const {
-    if (x >= 0 && x < width && y >= 0 && y < height) {
+    if (x >= 0 && x < matrixWidth && y >= 0 && y < matrixHeight) {
         return field[x][y];
     }
-    return nullptr; 
+    return nullptr;
+}
+
+void BlocksMatrix::del_block(int x, int y) {
+    field[x][y] = nullptr;
 }
