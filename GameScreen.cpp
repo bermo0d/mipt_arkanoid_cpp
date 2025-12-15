@@ -134,10 +134,10 @@ std::pair<int, int> GameScreen::checkTopCollideBallWithBlocks() {
             int x2 = p2.x;
             int y2 = p2.y;
 
-            if ((y1 + 2 * ballRadius >= y2 && y1 + 2 * ballRadius <= y2 + h) &&
+            if ((y1 + 2 * ballRadius >= y2 && y1 <= y2 + h) &&
                 (prev_y1 + 2 * ballRadius < y2) &&
                 (x2 <= x1 + 2 * ballRadius && x1 <= x2 + w)) {
-                    return std::pair<int, int>(i, j);
+                return std::pair<int, int>(i, j);
             }
         }
     }
@@ -165,7 +165,7 @@ std::pair<int, int> GameScreen::checkBottomCollideBallWithBlocks() {
             int x2 = p2.x;
             int y2 = p2.y;
 
-            if ((y2 + h >= y1 && y2 + h <= y1 + 2 * ballRadius) &&
+            if ((y2 + h >= y1 && y2 <= y1 + 2 * ballRadius) &&
                 !(y2 + h >= prev_y1 && y2 + h <= prev_y1 + 2 * ballRadius) &&
                 (x2 <= x1 + 2 * ballRadius && x1 <= x2 + w)) {
                 return std::pair<int, int>(i, j);
