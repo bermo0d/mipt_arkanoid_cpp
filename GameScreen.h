@@ -11,6 +11,7 @@ public:
     GameScreen(int x, int y, int w, int h);
 
     void attach(Shape& s) { shapes.push_back(&s); }
+    void detach(Shape& s);
 
     void updateFrame(void* userdata);
 

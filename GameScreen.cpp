@@ -18,6 +18,12 @@ GameScreen::GameScreen(int x, int y, int w, int h) :
     }
 }
 
+void GameScreen::detach(Graph_lib::Shape &s) {
+    for (unsigned int i = shapes.size(); 0 < i; --i)  // guess last attached will be first released
+        if (shapes[i - 1] == &s)
+            shapes.erase(shapes.begin() + (i - 1));  // &shapes[i-1]);
+}
+
 int GameScreen::handle(int event) {
     platform.setPos(std::min(std::max(Fl::event_x() - platformWidth / 2, 0), windowWidth - platformWidth), platformY);
     return 0;
