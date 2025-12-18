@@ -17,7 +17,7 @@ public:
     
 private:
     int health;
-    const char* textureName; // Храним имя текстуры для этого блока
+    const char* textureName;
 };
 
 #endif // ARKANOID_BLOCK_H
