@@ -15,6 +15,7 @@ public:
     int getBlockWidth() const;
     void set_block(int x, int y);
     void del_block(int x, int y);
+    bool allBlocksDestroyed() const;
 
 private:
     int matrixHeight;

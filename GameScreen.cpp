@@ -85,6 +85,25 @@ void GameScreen::updateFrame(void *userdata) {
     return;
     }
 
+    if (blocks.allBlocksDestroyed()) {
+        ball.set_dy(0);
+        ball.set_dx(0);
+        
+
+        Fl_PNG_Image winScreen("sources/textures/WinScreen.png");
+        if (!winScreen.fail()) {
+            winScreen.draw(x(), y(), w(), h());
+        } else {
+            fl_color(FL_GREEN);
+            fl_rectf(x(), y(), w(), h());
+            fl_color(FL_WHITE);
+            fl_font(FL_HELVETICA_BOLD, 36);
+            fl_draw("YOU WIN!", x() + w()/2 - 80, y() + h()/2);
+        }
+
+        return;
+    }
+
     if (auto [i, j] = checkTopCollideBallWithBlocks(); i != -1 && j != -1) {
         detach((Shape&) *blocks.get_block(i, j));
         blocks.del_block(i, j);

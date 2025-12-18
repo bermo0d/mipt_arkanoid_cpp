@@ -1,4 +1,3 @@
-#include <FL/Fl.H>
 #include "Graph_lib/Graph.h"
 #include "ArkanoidWindow.h"
 #include "Settings.h"
