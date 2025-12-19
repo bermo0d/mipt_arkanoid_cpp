@@ -32,6 +32,8 @@ private:
     bool collideBallWithWalls() const;
     bool collideBallWithRoof() const;
     bool collideBallWithFloor() const;
+
+    bool gameIsOn = false;
 };
 
 

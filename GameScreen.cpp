@@ -35,7 +35,19 @@ void GameScreen::detach(Graph_lib::Shape &s) {
 }
 
 int GameScreen::handle(int event) {
-    platform.setPos(std::min(std::max(Fl::event_x() - platformWidth / 2, 0), windowWidth - platformWidth), platformY);
+        platform.setPos(std::min(std::max(Fl::event_x() - platformWidth / 2, 0), windowWidth - platformWidth), platformY);
+    if (!gameIsOn) {
+        ball.setPos(platform.point(0).x + platformWidth / 2 - ballRadius, platformY - ballRadius - 10);
+        if (event == FL_SHORTCUT) {
+            gameIsOn = true;
+
+            std::srand(std::time(0));
+            ball.set_dx(rand() % 2 ? -ballStartSpeedX : ballStartSpeedX);
+            ball.set_dy(-ballStartSpeedY);
+            return 1;
+        }
+        Fl_Group::handle(event);
+    }
     return 0;
 }
 
