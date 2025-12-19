@@ -1,13 +1,11 @@
 #include "GameScreen.h"
 #include "Settings.h"
 #include <cmath>
-#include "Fl/Fl.H"
-#include "Fl/Fl_Group.H"
 
 GameScreen::GameScreen(int x, int y, int w, int h) :
         Fl_Group(x, y, w, h),
         platform{Point{platformStartX, platformY}, platformWidth, platformHeight},
-        ball{Point{50, 100}, ballRadius},
+        ball{Point{50, 500}, ballRadius},
         blocks{10, 10} {
     attach(platform);
     attach(ball);
@@ -16,6 +14,16 @@ GameScreen::GameScreen(int x, int y, int w, int h) :
         for (int j = 0; j < blocks.getMatrixWidth(); j++) {
             Block* b = blocks.get_block(i, j);
             attach((Shape&) *b);
+        }
+    }
+
+    for (int i = 0; i < blocks.getMatrixHeight(); i++) {
+        for (int j = 0; j < blocks.getMatrixWidth(); j++) {
+            Block* b = blocks.get_block(i, j);
+            if (i == 0 || j == 0 || j == blocks.getMatrixWidth() - 1) {
+                detach((Shape&) *blocks.get_block(i, j));
+                blocks.del_block(i, j);
+            }
         }
     }
 }
@@ -27,7 +35,19 @@ void GameScreen::detach(Graph_lib::Shape &s) {
 }
 
 int GameScreen::handle(int event) {
-    platform.setPos(std::min(std::max(Fl::event_x() - platformWidth / 2, 0), windowWidth - platformWidth), platformY);
+        platform.setPos(std::min(std::max(Fl::event_x() - platformWidth / 2, 0), windowWidth - platformWidth), platformY);
+    if (!gameIsOn) {
+        ball.setPos(platform.point(0).x + platformWidth / 2 - ballRadius, platformY - ballRadius - 10);
+        if (event == FL_SHORTCUT) {
+            gameIsOn = true;
+
+            std::srand(std::time(0));
+            ball.set_dx(rand() % 2 ? -ballStartSpeedX : ballStartSpeedX);
+            ball.set_dy(-ballStartSpeedY);
+            return 1;
+        }
+        Fl_Group::handle(event);
+    }
     return 0;
 }
 
@@ -53,6 +73,10 @@ void GameScreen::updateFrame(void *userdata) {
     }
     if (collideBallWithRoof()) {
         ball.set_dy(-dy);
+        if (dx == 0) {
+            dx = rand() % 2 ? 1 : -1;
+            ball.set_dx(-dx);
+        }
     }
 
     if (collideBallWithPlatform()) {
@@ -65,7 +89,7 @@ void GameScreen::updateFrame(void *userdata) {
         int new_dx = std::round((x - platform.point(0).x - w) / w * abs(dy));
 
         ball.set_dx(new_dx);
-        ball.set_dy(-std::round(std::sqrt(dx * dx + dy * dy - new_dx * new_dx)));
+        ball.set_dy(std::min(-std::round(std::sqrt(dx * dx + dy * dy - new_dx * new_dx)), -1.));
 
     }
     if (collideBallWithFloor()) {
@@ -73,27 +97,103 @@ void GameScreen::updateFrame(void *userdata) {
         ball.set_dx(0);
     }
 
-    if (auto [i, j] = checkTopCollideBallWithBlocks(); i != -1 && j != -1) {
-        detach((Shape&) *blocks.get_block(i, j));
-        blocks.del_block(i, j);
+    Point p1 = ball.point(0);
+    int x1 = p1.x;
+    int y1 = p1.y;
+
+    auto [prev_x1, prev_y1] = ball.getPrevPos();
+
+    int w = blocks.getBlockWidth();
+    int h = blocks.getBlockHeight();
+
+    int index_i = -1;
+    int index_j = -1;
+
+    bool topCollide = false;
+    bool bottomCollide = false;
+    bool leftCollide = false;
+    bool rightCollide = false;
+
+    for (int i = 0; i < blocks.getMatrixHeight(); i++) {
+        for (int j = 0; j < blocks.getMatrixWidth(); j++) {
+            Block *block = blocks.get_block(i, j);
+            if (block == nullptr) {
+                continue;
+            }
+
+            Point p2 = block->point(0);
+            int x2 = p2.x;
+            int y2 = p2.y;
+
+            if ((y1 + 2 * ballRadius >= y2 && y1 <= y2 + h) &&
+                (prev_y1 + 2 * ballRadius < y2) &&
+                (x2 <= x1 + 2 * ballRadius && x1 <= x2 + w) && dy > 0) {
+                topCollide = true;
+            }
+            if ((y2 + h >= y1 && y2 <= y1 + 2 * ballRadius) &&
+                y2 + h < prev_y1 &&
+                (x2 <= x1 + 2 * ballRadius && x1 <= x2 + w) && dy < 0) {
+                bottomCollide = true;
+            }
+            if ((x1 + 2 * ballRadius >= x2 && x1 <= x2 + w) &&
+                (prev_x1 + 2 * ballRadius < x2) &&
+                (y2 <= y1 + 2 * ballRadius && y1 <= y2 + h) && dx > 0) {
+                leftCollide = true;
+            }
+            if ((x2 + w >= x1 && x2 <= x1 + 2 * ballRadius) &&
+                x2 + w < prev_x1 &&
+                (y2 <= y1 + 2 * ballRadius && y1 <= y2 + h) && dx < 0) {
+                rightCollide = true;
+            }
+
+            if (topCollide && leftCollide) {
+                if (double y = (x2 - prev_x1) * (prev_y1 - y1) / (prev_x1 - x1) + prev_y1; y2 <= y && y <= y2 + h) {
+                    topCollide = false;
+                } else {
+                    leftCollide = false;
+                }
+            } else if (topCollide && rightCollide) {
+                if (double y = (x2 + w - prev_x1) * (prev_y1 - y1) / (prev_x1 - x1) + prev_y1; y2 <= y && y <= y2 + h) {
+                    topCollide = false;
+                } else {
+                    rightCollide = false;
+                }
+            } else if (bottomCollide && leftCollide) {
+                if (double y = (x2 - prev_x1) * (prev_y1 - y1) / (prev_x1 - x1) + prev_y1; y2 <= y && y <= y2 + h) {
+                    bottomCollide = false;
+                } else {
+                    leftCollide = false;
+                }
+
+            } else if (bottomCollide && rightCollide) {
+                if (double y = (x2 + w - prev_x1) * (prev_y1 - y1) / (prev_x1 - x1) + prev_y1; y2 <= y && y <= y2 + h) {
+                    bottomCollide = false;
+                } else {
+                    rightCollide = false;
+                }
+            }
+
+            if (topCollide || bottomCollide || leftCollide || rightCollide) {
+                index_j = j;
+                index_i = i;
+                break;
+            }
+        }
+
+        if (topCollide || bottomCollide || leftCollide || rightCollide) {
+            detach((Shape&) *blocks.get_block(index_i, index_j));
+            blocks.del_block(index_i, index_j);
+            break;
+        }
+    }
+
+    if (topCollide || bottomCollide) {
         ball.set_dy(-dy);
-    }
-
-    if (auto [i, j] = checkBottomCollideBallWithBlocks(); i != -1 && j != -1) {
-        detach((Shape&) *blocks.get_block(i, j));
-        blocks.del_block(i, j);
-        ball.set_dy(-dy);
-    }
-
-    if (auto [i, j] = checkLeftCollideBallWithBlocks(); i != -1 && j != -1) {
-        detach((Shape&) *blocks.get_block(i, j));
-        blocks.del_block(i, j);
-        ball.set_dx(-dx);
-    }
-
-    if (auto [i, j] = checkRightCollideBallWithBlocks(); i != -1 && j != -1) {
-        detach((Shape&) *blocks.get_block(i, j));
-        blocks.del_block(i, j);
+        if (dx == 0) {
+            dx = rand() % 2 ? 1 : -1;
+            ball.set_dx(-dx);
+        }
+    } else if (leftCollide || rightCollide) {
         ball.set_dx(-dx);
     }
 
@@ -132,128 +232,4 @@ bool GameScreen::collideBallWithRoof() const {
 
 bool GameScreen::collideBallWithFloor() const {
     return ball.point(0).y + 2 * ball.radius() >= windowHeight;
-}
-
-std::pair<int, int> GameScreen::checkTopCollideBallWithBlocks() {
-    Point p1 = ball.point(0);
-    int x1 = p1.x;
-    int y1 = p1.y;
-    int prev_y1 = ball.getPrevPos().y;
-
-    int w = blocks.getBlockWidth();
-    int h = blocks.getBlockHeight();
-
-    for (int i = 0; i < blocks.getMatrixHeight(); i++) {
-        for (int j = 0; j < blocks.getMatrixWidth(); j++) {
-            Block* block = blocks.get_block(i, j);
-            if (block == nullptr) {
-                continue;
-            }
-
-            Point p2 = block->point(0);
-            int x2 = p2.x;
-            int y2 = p2.y;
-
-            if ((y1 + 2 * ballRadius >= y2 && y1 <= y2 + h) &&
-                (prev_y1 + 2 * ballRadius < y2) &&
-                (x2 <= x1 + 2 * ballRadius && x1 <= x2 + w)) {
-                return std::pair<int, int>(i, j);
-            }
-        }
-    }
-
-    return std::pair<int, int>(-1, -1);
-}
-
-std::pair<int, int> GameScreen::checkBottomCollideBallWithBlocks() {
-    Point p1 = ball.point(0);
-    int x1 = p1.x;
-    int y1 = p1.y;
-    int prev_y1 = ball.getPrevPos().y;
-
-    int w = blocks.getBlockWidth();
-    int h = blocks.getBlockHeight();
-
-    for (int i = 0; i < blocks.getMatrixHeight(); i++) {
-        for (int j = 0; j < blocks.getMatrixWidth(); j++) {
-            Block* block = blocks.get_block(i, j);
-            if (block == nullptr) {
-                continue;
-            }
-
-            Point p2 = block->point(0);
-            int x2 = p2.x;
-            int y2 = p2.y;
-
-            if ((y2 + h >= y1 && y2 <= y1 + 2 * ballRadius) &&
-                !(y2 + h >= prev_y1 && y2 + h <= prev_y1 + 2 * ballRadius) &&
-                (x2 <= x1 + 2 * ballRadius && x1 <= x2 + w)) {
-                return std::pair<int, int>(i, j);
-            }
-        }
-    }
-
-    return std::pair<int, int>(-1, -1);
-}
-
-std::pair<int, int> GameScreen::checkLeftCollideBallWithBlocks() {
-    Point p1 = ball.point(0);
-    int x1 = p1.x;
-    int y1 = p1.y;
-    int prev_x1 = ball.getPrevPos().x;
-
-    int w = blocks.getBlockWidth();
-    int h = blocks.getBlockHeight();
-
-    for (int i = 0; i < blocks.getMatrixHeight(); i++) {
-        for (int j = 0; j < blocks.getMatrixWidth(); j++) {
-            Block *block = blocks.get_block(i, j);
-            if (block == nullptr) {
-                continue;
-            }
-
-            Point p2 = block->point(0);
-            int x2 = p2.x;
-            int y2 = p2.y;
-
-            if ((x1 + 2 * ballRadius >= x2 && x1 <= x2 + w) &&
-                (prev_x1 + 2 * ballRadius < x2) &&
-                (y2 <= y1 + 2 * ballRadius && y1 <= y2 + h)) {
-                return std::pair<int, int>(i, j);
-            }
-        }
-    }
-
-    return std::pair<int, int>(-1, -1);
-}
-
-std::pair<int, int> GameScreen::checkRightCollideBallWithBlocks() {
-    Point p1 = ball.point(0);
-    int x1 = p1.x;
-    int y1 = p1.y;
-    int prev_x1 = ball.getPrevPos().x;
-
-    int w = blocks.getBlockWidth();
-    int h = blocks.getBlockHeight();
-
-    for (int i = 0; i < blocks.getMatrixHeight(); i++) {
-        for (int j = 0; j < blocks.getMatrixWidth(); j++) {
-            Block *block = blocks.get_block(i, j);
-            if (block == nullptr) {
-                continue;
-            }
-
-            Point p2 = block->point(0);
-            int x2 = p2.x;
-            int y2 = p2.y;
-
-            if ((x2 + w >= x1 && x2 <= x1 + 2 * ballRadius) &&
-                !(x2 + w >= prev_x1 && x2 + w <= prev_x1 + 2 * ballRadius) &&
-                (y2 <= y1 + 2 * ballRadius && y1 <= y2 + h)) {
-                return std::pair<int, int>(i, j);
-            }
-        }
-    }
-
-    return std::pair<int, int>(-1, -1);
 }

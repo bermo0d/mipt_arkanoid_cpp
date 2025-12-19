@@ -3,6 +3,7 @@
 
 #include "Graph_lib/Graph.h"
 #include <ctime>
+#include "Settings.h"
 
 using namespace Graph_lib;
 
@@ -24,10 +25,12 @@ public:
 
     void triggerHappySmile();
 
+    void setPos(int x, int y);
+
 private:
     Point prevPos;
-    int dx = 4;
-    int dy = 4;
+    int dx = 0;
+    int dy = 0;
     mutable bool happySmile = false;
     mutable std::time_t happySmileStartTime = 0;
 };
