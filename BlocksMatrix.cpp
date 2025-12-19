@@ -18,6 +18,12 @@ BlocksMatrix::BlocksMatrix(int matrixHeight, int matrixWidth) :
 
     generate();
 }
+bool BlocksMatrix::allBlocksDestroyed() const {
+    for (const auto& row : field)
+        for (Block* b : row)
+            if (b) return false;
+    return true;
+}
 
 void BlocksMatrix::generate() {
     for (int i = 0; i < matrixWidth; i++) {

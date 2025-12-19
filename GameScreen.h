@@ -6,9 +6,11 @@
 #include "Ball.h"
 #include "BlocksMatrix.h"
 
+class ArkanoidWindow;
+
 class GameScreen : public Fl_Group {
 public:
-    GameScreen(int x, int y, int w, int h);
+    GameScreen(int x, int y, int w, int h, ArkanoidWindow* p);
 
     void attach(Shape& s) { shapes.push_back(&s); }
     void detach(Shape& s);
@@ -20,6 +22,7 @@ protected:
 
 
 private:
+    ArkanoidWindow* parent;
     std::vector<Shape*> shapes;
 
     Platform platform;
@@ -33,7 +36,8 @@ private:
     bool collideBallWithRoof() const;
     bool collideBallWithFloor() const;
 
-    bool gameIsOn = false;
+    bool gameIsStarted = false;
+    bool gameIsFinished = false;
 };
 
 

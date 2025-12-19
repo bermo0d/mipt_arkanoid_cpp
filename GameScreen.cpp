@@ -1,11 +1,14 @@
 #include "GameScreen.h"
 #include "Settings.h"
 #include <cmath>
+#include "ArkanoidWindow.h"
 
-GameScreen::GameScreen(int x, int y, int w, int h) :
+
+GameScreen::GameScreen(int x, int y, int w, int h, ArkanoidWindow* p) :
         Fl_Group(x, y, w, h),
+        parent(p),
         platform{Point{platformStartX, platformY}, platformWidth, platformHeight},
-        ball{Point{50, 500}, ballRadius},
+        ball{Point{0, 0}, ballRadius},
         blocks{10, 10} {
     attach(platform);
     attach(ball);
@@ -19,7 +22,6 @@ GameScreen::GameScreen(int x, int y, int w, int h) :
 
     for (int i = 0; i < blocks.getMatrixHeight(); i++) {
         for (int j = 0; j < blocks.getMatrixWidth(); j++) {
-            Block* b = blocks.get_block(i, j);
             if (i == 0 || j == 0 || j == blocks.getMatrixWidth() - 1) {
                 detach((Shape&) *blocks.get_block(i, j));
                 blocks.del_block(i, j);
@@ -36,10 +38,10 @@ void GameScreen::detach(Graph_lib::Shape &s) {
 
 int GameScreen::handle(int event) {
         platform.setPos(std::min(std::max(Fl::event_x() - platformWidth / 2, 0), windowWidth - platformWidth), platformY);
-    if (!gameIsOn) {
+    if (!gameIsStarted) {
         ball.setPos(platform.point(0).x + platformWidth / 2 - ballRadius, platformY - ballRadius - 10);
         if (event == FL_SHORTCUT) {
-            gameIsOn = true;
+            gameIsStarted = true;
 
             std::srand(std::time(0));
             ball.set_dx(rand() % 2 ? -ballStartSpeedX : ballStartSpeedX);
@@ -47,6 +49,11 @@ int GameScreen::handle(int event) {
             return 1;
         }
         Fl_Group::handle(event);
+    } else if (gameIsFinished) {
+        if (event == FL_SHORTCUT) {
+            parent->openStartScreen();
+            return 1;
+        }
     }
     return 0;
 }
@@ -93,8 +100,40 @@ void GameScreen::updateFrame(void *userdata) {
 
     }
     if (collideBallWithFloor()) {
-        ball.set_dy(0); // TODO: game over screen
+        gameIsFinished = true;
+
+        ball.set_dy(0);
         ball.set_dx(0);
+
+        Fl_PNG_Image loseScreen("sources/textures/LoseScreen.png");
+        if (!loseScreen.fail()) {
+            loseScreen.draw(x(), y(), w(), h());
+        } else {
+            fl_color(FL_RED);
+            fl_rectf(x(), y(), w(), h());
+            fl_color(FL_WHITE);
+            fl_font(FL_HELVETICA_BOLD, 36);
+            fl_draw("GAME OVER", x() + w() / 2 - 100, y() + h() / 2);
+        }
+
+    }
+
+    if (blocks.allBlocksDestroyed()) {
+        gameIsFinished = true;
+
+        ball.set_dy(0);
+        ball.set_dx(0);
+
+        Fl_PNG_Image winScreen("sources/textures/WinScreen.png");
+        if (!winScreen.fail()) {
+            winScreen.draw(x(), y(), w(), h());
+        } else {
+            fl_color(FL_GREEN);
+            fl_rectf(x(), y(), w(), h());
+            fl_color(FL_WHITE);
+            fl_font(FL_HELVETICA_BOLD, 36);
+            fl_draw("YOU WIN!", x() + w()/2 - 80, y() + h()/2);
+        }
     }
 
     Point p1 = ball.point(0);
@@ -197,12 +236,15 @@ void GameScreen::updateFrame(void *userdata) {
         ball.set_dx(-dx);
     }
 
-    redraw();
+    if (!gameIsFinished) {
+        redraw();
 
-    Fl::repeat_timeout(0.016, [](void* userdata) -> void {
-        GameScreen* screen = static_cast<GameScreen*>(userdata);
-        screen->updateFrame(userdata);
-    }, this);
+        Fl::repeat_timeout(0.016, [](void *userdata) -> void {
+            GameScreen *screen = static_cast<GameScreen *>(userdata);
+            screen->updateFrame(userdata);
+        }, this);
+    }
+
 }
 
 

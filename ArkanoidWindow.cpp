@@ -1,5 +1,6 @@
 #include "ArkanoidWindow.h"
 #include "Graph_lib/Window.h"
+#include "Settings.h"
 
 using namespace Graph_lib;
 
@@ -7,17 +8,16 @@ using namespace Graph_lib;
 ArkanoidWindow::ArkanoidWindow(Point xy, int w, int h, const std::string &title) :
         Window{xy, w, h, title} {
     startScreen = new StartScreen{0, 0, w, h, *this};
-    gameScreen = new GameScreen{0, 0, w, h};
 
     add(startScreen);
-    add(gameScreen);
     init();
 
     startScreen->show();
-    gameScreen->hide();
 }
 
 void ArkanoidWindow::openGameScreen() {
+    gameScreen = new GameScreen{0, 0, windowWidth, windowHeight, this};
+    add(gameScreen);
     gameScreen->show();
     startScreen->hide();
 
@@ -25,4 +25,14 @@ void ArkanoidWindow::openGameScreen() {
         GameScreen* screen = static_cast<GameScreen*>(userdata);
         screen->updateFrame(userdata);
     }, gameScreen);
+}
+
+void ArkanoidWindow::openStartScreen() {
+    gameScreen->hide();
+    remove(gameScreen);
+    delete gameScreen;
+    gameScreen = nullptr;
+
+    startScreen->show();
+
 }

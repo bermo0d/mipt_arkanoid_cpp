@@ -17,6 +17,7 @@ public:
     virtual ~ArkanoidWindow() = default;
 
     void openGameScreen();
+    void openStartScreen();
 
 private:
     StartScreen* startScreen;
