@@ -57,3 +57,7 @@ void Ball::draw_lines() const {
     fl_color(FL_BLACK);
     fl_arc(x, y, size, size, 0, 360);
 }
+
+void Ball::setPos(int x, int y) {
+    set_point(0, Point{x, y});
+}

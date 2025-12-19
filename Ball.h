@@ -25,10 +25,12 @@ public:
 
     void triggerHappySmile();
 
+    void setPos(int x, int y);
+
 private:
     Point prevPos;
-    int dx = ballStartSpeedX;
-    int dy = ballStartSpeedY;
+    int dx = 0;
+    int dy = 0;
     mutable bool happySmile = false;
     mutable std::time_t happySmileStartTime = 0;
 };
