@@ -16,6 +16,16 @@ GameScreen::GameScreen(int x, int y, int w, int h) :
             attach((Shape&) *b);
         }
     }
+
+    for (int i = 0; i < blocks.getMatrixHeight(); i++) {
+        for (int j = 0; j < blocks.getMatrixWidth(); j++) {
+            Block* b = blocks.get_block(i, j);
+            if (i == 0 || j == 0 || j == blocks.getMatrixWidth() - 1) {
+                detach((Shape&) *blocks.get_block(i, j));
+                blocks.del_block(i, j);
+            }
+        }
+    }
 }
 
 void GameScreen::detach(Graph_lib::Shape &s) {
@@ -101,23 +111,50 @@ void GameScreen::updateFrame(void *userdata) {
 
             if ((y1 + 2 * ballRadius >= y2 && y1 <= y2 + h) &&
                 (prev_y1 + 2 * ballRadius < y2) &&
-                (x2 <= x1 + 2 * ballRadius && x1 <= x2 + w)) {
+                (x2 <= x1 + 2 * ballRadius && x1 <= x2 + w) && dy > 0) {
                 topCollide = true;
             }
             if ((y2 + h >= y1 && y2 <= y1 + 2 * ballRadius) &&
-                !(y2 + h >= prev_y1 && y2 + h <= prev_y1 + 2 * ballRadius) &&
-                (x2 <= x1 + 2 * ballRadius && x1 <= x2 + w)) {
+                y2 + h < prev_y1 &&
+                (x2 <= x1 + 2 * ballRadius && x1 <= x2 + w) && dy < 0) {
                 bottomCollide = true;
             }
             if ((x1 + 2 * ballRadius >= x2 && x1 <= x2 + w) &&
                 (prev_x1 + 2 * ballRadius < x2) &&
-                (y2 <= y1 + 2 * ballRadius && y1 <= y2 + h)) {
+                (y2 <= y1 + 2 * ballRadius && y1 <= y2 + h) && dx > 0) {
                 leftCollide = true;
             }
             if ((x2 + w >= x1 && x2 <= x1 + 2 * ballRadius) &&
-                !(x2 + w >= prev_x1 && x2 + w <= prev_x1 + 2 * ballRadius) &&
-                (y2 <= y1 + 2 * ballRadius && y1 <= y2 + h)) {
+                x2 + w < prev_x1 &&
+                (y2 <= y1 + 2 * ballRadius && y1 <= y2 + h) && dx < 0) {
                 rightCollide = true;
+            }
+
+            if (topCollide && leftCollide) {
+                if (double y = (x2 - prev_x1) * (prev_y1 - y1) / (prev_x1 - x1) + prev_y1; y2 <= y && y <= y2 + h) {
+                    topCollide = false;
+                } else {
+                    leftCollide = false;
+                }
+            } else if (topCollide && rightCollide) {
+                if (double y = (x2 + w - prev_x1) * (prev_y1 - y1) / (prev_x1 - x1) + prev_y1; y2 <= y && y <= y2 + h) {
+                    topCollide = false;
+                } else {
+                    rightCollide = false;
+                }
+            } else if (bottomCollide && leftCollide) {
+                if (double y = (x2 - prev_x1) * (prev_y1 - y1) / (prev_x1 - x1) + prev_y1; y2 <= y && y <= y2 + h) {
+                    bottomCollide = false;
+                } else {
+                    leftCollide = false;
+                }
+
+            } else if (bottomCollide && rightCollide) {
+                if (double y = (x2 + w - prev_x1) * (prev_y1 - y1) / (prev_x1 - x1) + prev_y1; y2 <= y && y <= y2 + h) {
+                    bottomCollide = false;
+                } else {
+                    rightCollide = false;
+                }
             }
 
             if (topCollide || bottomCollide || leftCollide || rightCollide) {
