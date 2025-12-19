@@ -8,5 +8,5 @@
 
 
 #define ballRadius 10
-#define ballStartSpeedX 4;
-#define ballStartSpeedY 4;
+#define ballStartSpeedX 4
+#define ballStartSpeedY 4
