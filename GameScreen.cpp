@@ -29,15 +29,14 @@ GameScreen::GameScreen(int x, int y, int w, int h, ArkanoidWindow* p) :
 
     for (int i = 0; i < blocks.getMatrixHeight(); i++) {
         for (int j = 0; j < blocks.getMatrixWidth(); j++) {
-            Block* b = blocks.get_block(i, j);
-            attach((Shape&) *b);
+            attach( *blocks.get_block(i, j));
         }
     }
 
     for (int i = 0; i < blocks.getMatrixHeight(); i++) {
         for (int j = 0; j < blocks.getMatrixWidth(); j++) {
             if (i == 0 || j == 0 || j == blocks.getMatrixWidth() - 1) {
-                detach((Shape&) *blocks.get_block(i, j));
+                detach( *blocks.get_block(i, j));
                 blocks.del_block(i, j);
             }
         }
@@ -82,6 +81,11 @@ void GameScreen::draw() {
     }
     for (unsigned int i = 0; i < shapes.size(); ++i)
         shapes[i]->draw();
+
+    fl_color(FL_BLACK);
+    fl_font(FL_HELVETICA_BOLD, 24);
+    std::string s = std::to_string(score);
+    fl_draw(s.c_str(), 10, 30);
 }
 
 void GameScreen::updateFrame(void *userdata) {
@@ -234,8 +238,9 @@ void GameScreen::updateFrame(void *userdata) {
         }
 
         if (topCollide || bottomCollide || leftCollide || rightCollide) {
-            detach((Shape&) *blocks.get_block(index_i, index_j));
+            detach(*blocks.get_block(index_i, index_j));
             blocks.del_block(index_i, index_j);
+            score++;
             break;
         }
     }
@@ -257,6 +262,11 @@ void GameScreen::updateFrame(void *userdata) {
             GameScreen* screen = static_cast<GameScreen *>(userdata);
             screen->updateFrame(userdata);
         }, this);
+    } else {
+        fl_color(FL_WHITE);
+        fl_font(FL_HELVETICA_BOLD, 36);
+        std::string s = "SCORE: " + std::to_string(score);
+        fl_draw(s.c_str(), windowWidth / 2 - 100, windowHeight - 100);
     }
 
 }

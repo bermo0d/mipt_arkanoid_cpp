@@ -38,6 +38,8 @@ private:
 
     bool gameIsStarted = false;
     bool gameIsFinished = false;
+
+    int score = 0;
 };
 
 
