@@ -3,6 +3,7 @@
 
 #include "Graph_lib/Graph.h"
 #include <ctime>
+#include "Settings.h"
 
 using namespace Graph_lib;
 
@@ -26,8 +27,8 @@ public:
 
 private:
     Point prevPos;
-    int dx = 4;
-    int dy = 4;
+    int dx = ballStartSpeedX;
+    int dy = ballStartSpeedY;
     mutable bool happySmile = false;
     mutable std::time_t happySmileStartTime = 0;
 };
