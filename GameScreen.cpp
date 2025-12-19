@@ -73,6 +73,10 @@ void GameScreen::updateFrame(void *userdata) {
     }
     if (collideBallWithRoof()) {
         ball.set_dy(-dy);
+        if (dx == 0) {
+            dx = rand() % 2 ? 1 : -1;
+            ball.set_dx(-dx);
+        }
     }
 
     if (collideBallWithPlatform()) {
@@ -185,6 +189,10 @@ void GameScreen::updateFrame(void *userdata) {
 
     if (topCollide || bottomCollide) {
         ball.set_dy(-dy);
+        if (dx == 0) {
+            dx = rand() % 2 ? 1 : -1;
+            ball.set_dx(-dx);
+        }
     } else if (leftCollide || rightCollide) {
         ball.set_dx(-dx);
     }
